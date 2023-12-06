@@ -1,0 +1,8 @@
+discord.py
+requests
+alpha_vantage
+alpaca-trade-api
+python-dotenv
+pandas
+scikit-learn
+numpy
