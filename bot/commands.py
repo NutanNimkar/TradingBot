@@ -1,11 +1,12 @@
-# commands.py
-
 from discord.ext import commands
 from bot.trading_logic import AlphaVantageTradingLogic
+from dotenv import load_dotenv
+import os
 
-ALPHA_VANTAGE_API_KEY = 'ZAJZK9GPV6QOTI3N'
+load_dotenv()
 
-alpha_vantage_logic = AlphaVantageTradingLogic(ALPHA_VANTAGE_API_KEY)
+ALAPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
+alpha_vantage_logic = AlphaVantageTradingLogic('ALPHA_VANTAGE_API_KEY')
 
 class StockCommands(commands.Cog):
     def __init__(self, bot):

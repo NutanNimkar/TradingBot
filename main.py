@@ -20,10 +20,7 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Load extensions (cogs) if you have them
-# bot.load_extension('my_cog')
 
-# Load the bot's initial extensions (e.g., commands, events)
 async def setup():
     await bot.load_extension('bot.commands')
 
