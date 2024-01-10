@@ -5,8 +5,9 @@ import os
 
 load_dotenv()
 
-ALAPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
-alpha_vantage_logic = AlphaVantageTradingLogic('ALPHA_VANTAGE_API_KEY')
+ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
+POLYGON_API_KEY = os.getenv('POLYGON_IO_API_KEY')
+alpha_vantage_logic = AlphaVantageTradingLogic(ALPHA_VANTAGE_API_KEY, POLYGON_API_KEY)
 
 class StockCommands(commands.Cog):
     def __init__(self, bot):
@@ -51,9 +52,6 @@ class StockCommands(commands.Cog):
         else:
             await ctx.send("No valid symbols were added.")
             
-        # response = "\n".join([f"Added to watchlist: {symbol}" for symbol in self.watchlist.items()])
-        # await ctx.send(response)
-    
     @commands.command(name='watchlist')
     async def display_watchlist(self,ctx):
         if not self.watchlist:
@@ -68,7 +66,36 @@ class StockCommands(commands.Cog):
         self.watchlist.clear()
         print("Watchlist deleted.")
         await ctx.send("Watchlist has been deleted")
+        
     
+    @commands.command(name='gethist')
+    async def run_gethistorical_prices(self, ctx, symbol):
+        try:
+            hist_data = alpha_vantage_logic.get_historical_polygon(symbol)
+            if hist_data is not None:
+                # Convert the DataFrame to a string for sending in Discord
+                # hist_data_str = hist_data.to_string(index=False)
+                await ctx.send(f"Historical data: Success for {symbol}")
+            else:
+                await ctx.send(f"Failed to get historical data for {symbol}. Check the symbol and try again.")
+        
+        except Exception as e:
+            await ctx.send(f"An error occured: {str(e)}")
+
+    @commands.command(name='recommend')
+    async def run_predict_price(self, ctx, symbol):
+        try:
+            alpha_vantage_logic.train_price_prediction_model(symbol)
+            
+            reccomendation = alpha_vantage_logic.decision_for_stock(symbol)
+            
+            if reccomendation:
+                print(reccomendation)
+                await ctx.send(f"Recommendation for {symbol}: {reccomendation}")
+            else:
+                await ctx.send(f"Failed to make a recommendation for {symbol}")
+        except Exception as e:
+            await ctx.send(f"An error occured: {str(e)}")
 
 async def setup(bot):
     await bot.add_cog(StockCommands(bot))
