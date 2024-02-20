@@ -1,6 +1,8 @@
+import discord
 from discord.ext import commands
 from bot.trading_logic import AlphaVantageTradingLogic
 from dotenv import load_dotenv
+import matplotlib.pyplot as plt
 import os
 
 load_dotenv()
@@ -57,7 +59,7 @@ class StockCommands(commands.Cog):
         if not self.watchlist:
             await ctx.send("Watchlist is empty")
         
-        response = "\n".join([f"{symbol}: ${price}" if price is not None else f"Error in the list" for symbol, price in self.watchlist.items()])
+        response = "\n".join([f"{symbol}: ${price}" if price is not None else f"Errorin the list" for symbol, price in self.watchlist.items()])
         await ctx.send(response)
         
     @commands.command(name='deletewatchlist')
@@ -75,12 +77,24 @@ class StockCommands(commands.Cog):
             if hist_data is not None:
                 # Convert the DataFrame to a string for sending in Discord
                 # hist_data_str = hist_data.to_string(index=False)
-                await ctx.send(f"Historical data: Success for {symbol}")
+                await ctx.send(f"Historical data: Success for {symbol}.")
             else:
-                await ctx.send(f"Failed to get historical data for {symbol}. Check the symbol and try again.")
+                await ctx.send(f"Failed to get historical data for {symbol}. ")
         
         except Exception as e:
-            await ctx.send(f"An error occured: {str(e)}")
+            await ctx.send(f"error: {str(e)}")
+            
+    @commands.command(name='plot')
+    async def run_plot(self, ctx, symbol):
+        try:
+            alpha_vantage_logic.train_price_prediction_model(symbol)
+            alpha_vantage_logic.plot_for_stock(symbol)
+            plot_path = os.path.abspath(f"{symbol}_plot.png")
+            
+            with open(f"{symbol}_plot.png", 'rb') as plot_file:
+                await ctx.send(f"Plot for {symbol}" , file = discord.File(plot_file))
+        except Exception as e:
+            await ctx.send(f"Error {str(e)}")
 
     @commands.command(name='recommend')
     async def run_predict_price(self, ctx, symbol):
@@ -95,7 +109,7 @@ class StockCommands(commands.Cog):
             else:
                 await ctx.send(f"Failed to make a recommendation for {symbol}")
         except Exception as e:
-            await ctx.send(f"An error occured: {str(e)}")
+            await ctx.send(f"Error: {str(e)}")
 
 async def setup(bot):
     await bot.add_cog(StockCommands(bot))
