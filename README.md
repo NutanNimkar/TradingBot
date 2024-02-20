@@ -20,5 +20,5 @@ I can help you find stocks and tell you if you should buy them or not.
 !recommend AAPL
 !watchlist
 !addtowatchlist
-!deletewatchlist`
-!plot AAPL
+!deletewatchlist
+!plot AAPL`
