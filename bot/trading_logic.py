@@ -51,7 +51,7 @@ class AlphaVantageTradingLogic:
             print('Successfully retrieved historical data for', symbol)
             return df
         else:
-            print(f"Failed to get historical data for {symbol}")
+            print(f"Failed to get historical data")
             return None
         
     def train_price_prediction_model(self, symbol):
@@ -59,7 +59,7 @@ class AlphaVantageTradingLogic:
         df = self.get_historical_polygon(symbol)
         
         if df is None or len(df) == 0:
-            print(f'Insufficient data for training {symbol}')
+            print(f'Not Enough data')
             return
         
         X = df.index.values.astype(int).reshape(-1, 1)
@@ -86,7 +86,7 @@ class AlphaVantageTradingLogic:
         
     def predict_price(self, symbol, date):
         if self.model is None:
-            print('Model not trained. Train the model')
+            print('Model not trained')
             return None
         date_numeric = np.array([[date.timestamp() * 1e9]])
         
@@ -120,7 +120,7 @@ class AlphaVantageTradingLogic:
         df = self.get_historical_polygon(symbol)
         
         if df is None or len(df) == 0:
-            print(f"Insufficient historical data for making predications")
+            print(f"Not Enough Data")
             return None
         
         #get last date in the dataset
